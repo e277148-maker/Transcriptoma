@@ -27,6 +27,14 @@ workflow TRANSCRIPTOMA {
 
     def ch_versions = channel.empty()
 
+    ch_reference_fasta = channel.fromPath(params.reference_fasta)
+    ch_reference_gtf   = channel.fromPath(params.reference_gtf)
+    ch_reference_gtf_with_meta = ch_reference_gtf.map { gtf ->
+    tuple([id: 'reference'], gtf)
+    }
+
+    HISAT2_EXTRACTSPLICESITES(ch_reference_gtf_with_meta)
+
     //
     // Collate and save software versions
     //
