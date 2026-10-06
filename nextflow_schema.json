@@ -10,7 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": ["input", "reference_fasta", "reference_gtf", "outdir"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -22,6 +22,24 @@
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
+                },
+                "reference_fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "description": "FASTA file containing the reference genome.",
+                    "help_text": "Path to the FASTA file containing the reference genome used for transcriptome analysis.",
+                    "fa_icon": "fas fa-dna"
+                },
+                "reference_gtf": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "description": "GTF file containing the annotation of the reference genome.",
+                    "help_text": "Path to the GTF annotation file corresponding to the reference genome.",
+                    "fa_icon": "fas fa-file-code"
                 },
                 "outdir": {
                     "type": "string",
