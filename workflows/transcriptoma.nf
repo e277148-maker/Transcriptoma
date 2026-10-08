@@ -9,6 +9,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_tran
 
 include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractsplicesites/main'
 include { HISAT2_BUILD } from '../modules/nf-core/hisat2/build/main'
+include { HISAT2_ALIGN } from '../modules/nf-core/hisat2/align/main'
 
 
 /*
