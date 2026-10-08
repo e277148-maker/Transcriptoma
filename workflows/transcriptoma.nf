@@ -7,7 +7,7 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_transcriptoma_pipeline'
 
-include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractsplices/main'
+include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractsplicesites/main'
 include { HISAT2_BUILD } from '../modules/nf-core/hisat2/build/main'
 
 
