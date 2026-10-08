@@ -28,12 +28,26 @@ workflow TRANSCRIPTOMA {
     def ch_versions = channel.empty()
 
     ch_reference_fasta = channel.fromPath(params.reference_fasta)
+
     ch_reference_gtf   = channel.fromPath(params.reference_gtf)
-    ch_reference_gtf_with_meta = ch_reference_gtf.map { gtf ->
-    tuple([id: 'reference'], gtf)
-    }
+
+    ch_reference_gtf_with_meta = ch_reference_gtf.map { gtf ->tuple([id: 'reference'], gtf)}
 
     HISAT2_EXTRACTSPLICESITES(ch_reference_gtf_with_meta)
+
+    ch_reference = ch_reference_fasta
+    .combine(ch_reference_gtf)
+    .map { fasta, gtf ->
+        tuple([id: 'reference'], fasta, gtf)
+    }
+
+    ch_reference_for_build = ch_reference
+    .combine(HISAT2_EXTRACTSPLICESITES.out.txt, by: 0)
+    .map { meta, fasta, gtf, splicesites ->
+        tuple(meta, fasta, gtf, splicesites)
+    }
+
+    HISAT2_BUILD(ch_reference_for_build, '1 GB')
 
     //
     // Collate and save software versions
