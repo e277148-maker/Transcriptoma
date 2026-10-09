@@ -50,6 +50,11 @@ workflow TRANSCRIPTOMA {
 
     HISAT2_BUILD(ch_reference_for_build, '1 GB')
 
+    ch_hisat2_index = HISAT2_BUILD.out.index.first()
+    ch_splicesites  = HISAT2_EXTRACTSPLICESITES.out.txt.first()
+
+    HISAT2_ALIGN(ch_samplesheet, ch_hisat2_index, ch_splicesites, false)
+
     //
     // Collate and save software versions
     //
