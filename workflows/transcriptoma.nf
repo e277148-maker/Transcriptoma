@@ -10,6 +10,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_tran
 include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractsplicesites/main'
 include { HISAT2_BUILD } from '../modules/nf-core/hisat2/build/main'
 include { HISAT2_ALIGN } from '../modules/nf-core/hisat2/align/main'
+include { SAMTOOLS_SORT } from '../modules/nf-core/samtools/sort/main'
 
 
 /*
@@ -54,6 +55,9 @@ workflow TRANSCRIPTOMA {
     ch_splicesites  = HISAT2_EXTRACTSPLICESITES.out.txt.first()
 
     HISAT2_ALIGN(ch_samplesheet, ch_hisat2_index, ch_splicesites, false)
+
+    SAMTOOLS_SORT(HISAT2_ALIGN.out.bam)
+
 
     //
     // Collate and save software versions
