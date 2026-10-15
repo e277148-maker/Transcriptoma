@@ -68,6 +68,17 @@ workflow TRANSCRIPTOMA {
 // Assemble transcripts using the reference annotation.
     STRINGTIE_STRINGTIE(ch_stringtie_input, '',ch_reference_gtf.first())
 
+// Merge transcript assemblies from all samples.
+    ch_stringtie_gtfs = STRINGTIE_STRINGTIE.out.transcript_gtf
+        .map { meta, gtf -> tuple(meta, gtf) }
+        .collect()
+        .map { gtfs -> tuple([id: 'merged'], gtfs) }
+
+    ch_reference_gtf_for_merge = ch_reference_gtf
+        .map { gtf -> tuple([id: 'reference'], gtf) }
+
+    STRINGTIE_MERGE(ch_stringtie_gtfs, ch_reference_gtf_for_merge)
+
 
     //
     // Collate and save software versions
