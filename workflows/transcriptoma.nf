@@ -11,6 +11,9 @@ include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractspl
 include { HISAT2_BUILD } from '../modules/nf-core/hisat2/build/main'
 include { HISAT2_ALIGN } from '../modules/nf-core/hisat2/align/main'
 include { SAMTOOLS_SORT } from '../modules/nf-core/samtools/sort/main'
+include { STRINGTIE_STRINGTIE } from '../modules/nf-core/stringtie/stringtie/main'
+include { STRINGTIE_MERGE } from '../modules/nf-core/stringtie/merge/main'
+
 
 
 /*
@@ -57,6 +60,13 @@ workflow TRANSCRIPTOMA {
     HISAT2_ALIGN(ch_samplesheet, ch_hisat2_index, ch_splicesites, false)
 
     SAMTOOLS_SORT(HISAT2_ALIGN.out.bam)
+
+// Prepare sorted BAMs for StringTie.
+// These are short-read data, so no long-read BAM is provided.
+    ch_stringtie_input = SAMTOOLS_SORT.out.bam.map { meta, bam -> tuple(meta, bam, [])}
+
+// Assemble transcripts using the reference annotation.
+    STRINGTIE_STRINGTIE(ch_stringtie_input, '',ch_reference_gtf.first())
 
 
     //

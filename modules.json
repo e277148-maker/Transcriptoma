@@ -20,9 +20,44 @@
                         "git_sha": "22b467cf44542d7e16b1410c5dbd5982c9545f27",
                         "installed_by": ["modules"]
                     },
+                    "kallisto/index": {
+                        "branch": "master",
+                        "git_sha": "53daf6285b9fbf1164b4dcab41da6e70e1f2f721",
+                        "installed_by": ["modules"]
+                    },
+                    "kallisto/quant": {
+                        "branch": "master",
+                        "git_sha": "53daf6285b9fbf1164b4dcab41da6e70e1f2f721",
+                        "installed_by": ["modules"]
+                    },
+                    "kallistobustools/count": {
+                        "branch": "master",
+                        "git_sha": "6ef220fd9252b42fb3c50348bbdbcb6246730686",
+                        "installed_by": ["modules"]
+                    },
+                    "kallistobustools/ref": {
+                        "branch": "master",
+                        "git_sha": "6ef220fd9252b42fb3c50348bbdbcb6246730686",
+                        "installed_by": ["modules"]
+                    },
                     "samtools/sort": {
                         "branch": "master",
                         "git_sha": "9339809fcb90af8a8b7051e6cd914894d5c52002",
+                        "installed_by": ["modules"]
+                    },
+                    "stringtie/merge": {
+                        "branch": "master",
+                        "git_sha": "6ef220fd9252b42fb3c50348bbdbcb6246730686",
+                        "installed_by": ["modules"]
+                    },
+                    "stringtie/stringtie": {
+                        "branch": "master",
+                        "git_sha": "3608e17edf8ad0a09b5eede8ef486729de703c28",
+                        "installed_by": ["modules"]
+                    },
+                    "tximeta/tximport": {
+                        "branch": "master",
+                        "git_sha": "2e17764b67b7613c0a420c3f13d9360c3377bee8",
                         "installed_by": ["modules"]
                     }
                 }
