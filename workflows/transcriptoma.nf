@@ -11,8 +11,12 @@ include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractspl
 include { HISAT2_BUILD } from '../modules/nf-core/hisat2/build/main'
 include { HISAT2_ALIGN } from '../modules/nf-core/hisat2/align/main'
 include { SAMTOOLS_SORT } from '../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_FAIDX } from '../modules/nf-core/samtools/faidx/main'
 include { STRINGTIE_STRINGTIE } from '../modules/nf-core/stringtie/stringtie/main'
 include { STRINGTIE_MERGE } from '../modules/nf-core/stringtie/merge/main'
+include { GFFREAD } from '../modules/nf-core/gffread/main'
+include { KALLISTO_INDEX } from '../modules/nf-core/kallisto/index/main'
+include { KALLISTO_QUANT } from '../modules/nf-core/kallisto/quant/main'
 
 
 
@@ -35,6 +39,14 @@ workflow TRANSCRIPTOMA {
     ch_reference_fasta = channel.fromPath(params.reference_fasta)
 
     ch_reference_gtf   = channel.fromPath(params.reference_gtf)
+
+// Index the reference genome FASTA for SAMtools.
+    ch_reference_fasta_with_meta = ch_reference_fasta
+        .map { fasta -> tuple([id: 'reference'], fasta, []) }
+
+    SAMTOOLS_FAIDX(ch_reference_fasta_with_meta, false)
+
+    ch_reference_fai = SAMTOOLS_FAIDX.out.fai
 
     ch_reference_gtf_with_meta = ch_reference_gtf.map { gtf ->tuple([id: 'reference'], gtf)}
 
@@ -59,7 +71,19 @@ workflow TRANSCRIPTOMA {
 
     HISAT2_ALIGN(ch_samplesheet, ch_hisat2_index, ch_splicesites, false)
 
-    SAMTOOLS_SORT(HISAT2_ALIGN.out.bam)
+// Prepare the reference FASTA and its index for SAMtools.
+    ch_reference_for_sort = ch_reference_fasta
+        .combine(ch_reference_fai)
+        .map { fasta, fai ->
+            tuple([id: 'reference'], fasta, fai)
+        }
+
+// Sort the alignment files.
+    SAMTOOLS_SORT(
+        HISAT2_ALIGN.out.bam,
+        ch_reference_for_sort,
+        ''
+    )
 
 // Prepare sorted BAMs for StringTie.
 // These are short-read data, so no long-read BAM is provided.
@@ -78,6 +102,29 @@ workflow TRANSCRIPTOMA {
         .map { gtf -> tuple([id: 'reference'], gtf) }
 
     STRINGTIE_MERGE(ch_stringtie_gtfs, ch_reference_gtf_for_merge)
+
+// Extract transcript sequences from the merged annotation.
+    ch_transcripts_fasta_input = STRINGTIE_MERGE.out.merged_gtf
+        .map { meta, gtf -> tuple(meta, gtf) }
+
+    GFFREAD(ch_transcripts_fasta_input, ch_reference_fasta.first())
+
+// Build the Kallisto transcriptome index.
+    ch_transcripts_fasta = GFFREAD.out.gffread_fasta
+
+    KALLISTO_INDEX(ch_transcripts_fasta)
+
+// Quantify transcript abundance for each sample.
+    ch_kallisto_index_for_quant = KALLISTO_INDEX.out.index
+        .combine( channel.value([]) )
+        .map { meta, index, unused -> tuple(meta, index, [], []) }
+
+    KALLISTO_QUANT(
+        ch_samplesheet,
+        ch_kallisto_index_for_quant,
+        250,
+        100
+    )
 
 
     //
